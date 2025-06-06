@@ -1,0 +1,45 @@
+# Dependencias
+node_modules/
+
+# Producción
+dist/
+build/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Configuración del entorno
+.env
+.env.local
+.env.*.local
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editor de texto
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Cache de dependencias
+.npm/
+.pnpm-debug.log
+.yarn-cache/
+.yarn/
+
+# Archivos temporales
+*.swp
+*.tmp
+*.bak
+
+# Test coverage
+coverage/
+
+# Otros
+.eslintcache
