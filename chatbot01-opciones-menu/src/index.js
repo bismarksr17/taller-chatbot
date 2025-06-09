@@ -1,6 +1,8 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require("baileys");
 const qrcode = require("qrcode-terminal");
 
+const userContext = {};
+
 async function conectarWhatsApp() {
 
   //useMultiFileAuthState es una función que crea un estado de autenticación en un carpeta
@@ -36,23 +38,141 @@ async function conectarWhatsApp() {
       console.log('CONEXIÓN ABIERTA!!!');
     }
   });
-
+  
   sock.ev.on('messages.upsert', async function (event) {
 
-    const type = event.type;
-    const message = event.messages[0];
-    const id = message.key.remoteJid;
+    for (const m of event.messages) {
+      console.log(JSON.stringify(m, undefined, 2));
+      const id = m.key.remoteJid;
 
-    if (type != 'notify' || message.key.fromMe || id.includes('@g.us') || id.includes('@broadcast')) {
-      return; // Ignora mensajes que no son notificaciones, enviados por el propio bot, 
-              // o de grupos/broadcasts
+      if (event.type != 'notify' || m.key.fromMe || id.includes('@g.us') || id.includes('@broadcast')) {
+        return;
+      }
+
+      let mensaje = m.message?.conversation || m.message?.extendedTextMessage?.text;
+      mensaje = mensaje+"".toUpperCase();
+
+      if (!userContext[id]) {
+        userContext[id] = {menuActual: "main"};
+        enviarMenu(sock, id, "main");
+        return;
+      }
+      
+      console.log("MENSAJES: ", mensaje);
+      console.log("CONTACTOS: ", userContext);
+      
+      const menuActual = userContext[id].menuActual;
+      const menu = menuData[menuActual];
+
+      const opcionSeleccionada = menu.options[mensaje];
+      if (opcionSeleccionada) {
+        if (opcionSeleccionada.respuesta) {
+          const tipo = opcionSeleccionada.respuesta.tipo;
+          if(tipo === "text") {
+            await sock.sendMessage(id, {text: opcionSeleccionada.respuesta.msg});
+          }
+          if(tipo === "image") {
+            await sock.sendMessage(id, {image: opcionSeleccionada.respuesta.msg});
+          }
+          if(tipo === "location") {
+            await sock.sendMessage(id, {location: opcionSeleccionada.respuesta.msg});
+          }
+        }
+        if (opcionSeleccionada.submenu) {
+          userContext[id].menuActual = opcionSeleccionada.submenu;
+          enviarMenu(sock, id, opcionSeleccionada.submenu);
+        }
+      } else {
+        await sock.sendMessage(id, {text: "Por favor, selecciona una opcion valida del menu"});
+      }
+
+      enviarMenu(sock, id, "main");
+
+      //console.log("respondiendo a: ", m.key.remoteJid);
+      //await sock.sendMessage(id, {text: "Hola mundo...!!!"});
     }
-    
-    await sock.sendMessage(id, {
-      text: "Hola soy un Bot!, en que te puedo ayudar?" 
-    });
-
   });
 }
 
 conectarWhatsApp();
+
+async function enviarMenu(sock, id, menuKey) {
+  const menu = menuData[menuKey]
+
+  const optionText = Object.entries(menu.options)
+      .map(([key, option]) => `- 👉 *${key}*: ${option.text}`)
+      .join("\n");
+  const menuMensaje = `${menu.mensaje}\n${optionText}\n\n> *Indicanos una opcion*`;
+  sock.sendMessage(id, {text: menuMensaje});
+}
+
+const menuData = {
+  main : {
+    mensaje: "*Hola, bienvenido, Como puedo ayudarte?*",
+    options: {
+      A: {
+        text: "Mas informacion",
+        respuesta: {
+          tipo: "text",
+          msg: "Nosotros somos una empresa que nos dedicamos..."
+        }
+      },
+      B: {
+        text: "Ver catalogo",
+        respuesta: {
+          tipo: "image",
+          msg: {
+            url: "https://th.bing.com/th/id/OIP.l7eey5U421cgks21ps8jeAHaC7?rs=1&pid=ImgDetMain"
+            }
+        }
+      },
+      C: {
+        text: "Ver ubicacion",
+        respuesta: {
+          tipo: "location",
+          msg: {
+            degreesLatitude: "-17.3155194686467",
+            degreesLongitude: "-63.262421487265016",
+            address: "IAG"
+          }
+        }
+      },
+      D: {
+        text: "Nuestros servicios",
+        submenu: "servicios"
+      },
+      E: {
+        text: "Hablar con un asesor",
+        respuesta: {
+          tipo: "text",
+          msg: "Contactanos, este es nuestro numero: +59178194371"
+        }
+      }
+    }
+  },
+  servicios : {
+    mensaje: "*Observe nuestros servicios*",
+    options: {
+      1: {
+        text: "Desarrollo de software",
+        respuesta: {
+          tipo: "text",
+          msg: "Desarrollamos software a la medida, para tu negocio"
+        }
+      },
+      2: {
+        text: "Nuestros clientes",
+        respuesta: {
+          tipo: "image",
+          msg: {
+            url: "https://th.bing.com/th/id/OIP.vWKIRYXzPj1j9u5qby2qnwHaFj?w=1400&h=1050&rs=1&pid=ImgDetMain"
+          }
+        }
+      },
+      3: {
+        text: "Volver a menu principal",
+        submenu: "main"
+      }
+    }
+  }
+}

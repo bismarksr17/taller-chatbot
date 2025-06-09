@@ -17,3 +17,19 @@
     }
   }
 }
+
+
+*REPORTE*
+*⚙️ Trapiches:* 01 y 02
+*🚛 Viajes disponibles:* 38
+*🔢 Toneladas aprox.:* 1710
+*⏱️ Promedio llegada vj.:* 12.33
+*📈 Viajes estimados:* 23.43
+*🕰️Total horas abas.:* 3.07
+*⏳Tiempo espera:* 1.59
+*🎋 Molienda actual:* 5413.81
+*📅 Planificacion actual:* 10800
+*🔻 Diferencia actual:* -5386.19
+*🕒 Promedio horario:* 451.15
+*🏭Molienda segun promedio:* 10827.62
+*📊Molienda segun estimacion:* 16213.81
