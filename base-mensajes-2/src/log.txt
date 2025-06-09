@@ -1,0 +1,19 @@
+{
+  key: {
+    remoteJid: '59177040205@s.whatsapp.net',
+    fromMe: false,
+    id: '5B7CFC20BBE89E802F367912F2FB8BBF',
+    participant: undefined
+  },
+  messageTimestamp: 1749460611,
+  pushName: 'UTEA - GUABIRA',
+  broadcast: false,
+  message: Message {
+    conversation: 'Hola',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2,
+      messageSecret: [Uint8Array]
+    }
+  }
+}

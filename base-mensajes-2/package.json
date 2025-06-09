@@ -1,0 +1,16 @@
+{
+  "name": "base-mensajes-whatsapp-node",
+  "version": "1.0.0",
+  "description": "Envio de mensajes por whatsapp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "baileys": "^6.7.18",
+    "clipboardy": "^4.0.0",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
