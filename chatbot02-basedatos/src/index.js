@@ -33,17 +33,20 @@ async function connectToWhatsApp() {
     sock.ev.on('messages.upsert', async function (event) {
 
         for (const m of event.messages) {
+
             console.log(JSON.stringify(m, undefined, 2))
 
             const id = m.key.remoteJid
 
-            if (type != 'notify' || m.key.fromMe || id.includes('@g.us') || id.includes('@broadcast')) {
+            if (event.type != 'notify' || m.key.fromMe || id.includes('@g.us') || id.includes('@broadcast')) {
                 return; // Ignora mensajes que no son notificaciones, enviados por el propio bot, o de grupos/broadcasts
             }
 
             console.log('Respondiendo a ', m.key.remoteJid)
             await sock.sendMessage(m.key.remoteJid, { text: 'Hello Word' })
+
         }
+
     });
     
 }
