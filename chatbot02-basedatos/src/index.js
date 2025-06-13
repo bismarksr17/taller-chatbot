@@ -1,6 +1,8 @@
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require("baileys");
 const qrcode = require("qrcode-terminal");
 
+const Contacto = require("./Contacto")
+
 async function connectToWhatsApp() {
 
     const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys')
@@ -41,6 +43,9 @@ async function connectToWhatsApp() {
             if (event.type != 'notify' || m.key.fromMe || id.includes('@g.us') || id.includes('@broadcast')) {
                 return; // Ignora mensajes que no son notificaciones, enviados por el propio bot, o de grupos/broadcasts
             }
+
+            const nombre = m.pushName
+            
 
             console.log('Respondiendo a ', m.key.remoteJid)
             await sock.sendMessage(m.key.remoteJid, { text: 'Hello Word' })
