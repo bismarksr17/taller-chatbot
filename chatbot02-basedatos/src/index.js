@@ -2,6 +2,7 @@ const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = requi
 const qrcode = require("qrcode-terminal");
 
 const Contacto = require("./Contacto")
+const Cliente = require("./Cliente");
 
 async function connectToWhatsApp() {
 
@@ -44,11 +45,38 @@ async function connectToWhatsApp() {
                 return; // Ignora mensajes que no son notificaciones, enviados por el propio bot, o de grupos/broadcasts
             }
 
-            const nombre = m.pushName
-            
+            const nombre = m.pushName;
 
-            console.log('Respondiendo a ', m.key.remoteJid)
-            await sock.sendMessage(m.key.remoteJid, { text: 'Hello Word' })
+            if(m.message.locationMessage){
+                const lati = m.message.locationMessage.degreesLatitude;
+                const long =m.message.locationMessage.degreesLongitude;
+                console.log(lati, " - ", long);
+
+                await Cliente.create({
+                    nombre_whatsapp: nombre,
+                    nro_whatsapp: id,
+                    latitud: lati,
+                    longitud: long
+                });
+
+            }
+
+            let mi_contacto = await Contacto.findOne({where: {nro_whatsapp: id}});
+            if(!mi_contacto) {
+                mi_contacto = await Contacto.create({
+                    nombre_whatsapp: nombre,
+                    nro_whatsapp: id,
+                })
+            }
+            
+            const sal = mi_contacto.saldo?mi_contacto.saldo:'0';
+            await sock.sendMessage(mi_contacto.nro_whatsapp, {text: "Hola " + mi_contacto.nombre_whatsapp + " Tienes un saldo pendiente de: " + sal})
+
+
+            //console.log('Respondiendo a ', m.key.remoteJid)
+            //await sock.sendMessage(m.key.remoteJid, { text: 'Hello Word' })
+
+
 
         }
 

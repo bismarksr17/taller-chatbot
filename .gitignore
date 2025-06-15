@@ -1,5 +1,6 @@
 # Dependencias
 node_modules/
+*/auth_info_baileys
 
 # Producción
 dist/

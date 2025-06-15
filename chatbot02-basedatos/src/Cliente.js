@@ -1,8 +1,9 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("./basedatos")
+const sequelize = require("./basedatos");
 
-const Contacto = sequelize.define(
-  'Contacto',
+
+const Cliente = sequelize.define(
+  'Cliente',
   {
     // Model attributes are defined here
     nro_whatsapp: {
@@ -10,12 +11,18 @@ const Contacto = sequelize.define(
       allowNull: false,
     },
     nombre_whatsapp: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING(50)
     },
     pais: {
         type: DataTypes.STRING(50)
     },
-    saldo:{
+    latitud: {
+        type: DataTypes.STRING(50)
+    },
+    longitud: {
+        type: DataTypes.STRING(50)
+    },
+    saldo: {
         type: DataTypes.DECIMAL(12, 2)
     }
   },
@@ -24,7 +31,6 @@ const Contacto = sequelize.define(
   },
 );
 
-// crea la tabla en base a la configuración (eso es migración)
-Contacto.sync()
+Cliente.sync();
 
-module.exports = Contacto
+module.exports = Cliente
