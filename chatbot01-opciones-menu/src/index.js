@@ -31,7 +31,7 @@ async function conectarWhatsApp() {
       // Si la conexión se cierra, verifica si se puede re conectar
       const puedoConectar = lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
       if(puedoConectar) {
-        conectarWhatsApp(); // Re-conecta si no se ha cerrado por logout
+        await conectarWhatsApp(); // Re-conecta si no se ha cerrado por logout
       }
     } else if(connection === 'open') {
       // Si la conexión se abre, muestra un mensaje en la terminal
@@ -39,8 +39,7 @@ async function conectarWhatsApp() {
     }
   });
   
-  sock.ev.on('messages.upsert', async function (event) {
-
+  sock.ev.on('messages.upsert', async (event) => {
     for (const m of event.messages) {
       console.log(JSON.stringify(m, undefined, 2));
       const id = m.key.remoteJid;

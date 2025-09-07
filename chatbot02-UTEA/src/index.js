@@ -20,7 +20,7 @@ async function connectToWhatsApp() {
 
         if (connection === 'close') {
             const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
-            console.log('🔌 Conexión cerrada. Reconectando:', shouldReconnect);
+            
             if (shouldReconnect) {
                 await connectToWhatsApp(); // 🔁 actualiza sock global
             }
@@ -88,3 +88,6 @@ cron.schedule('*/5 * * * *', async () => {
 });
 
 connectToWhatsApp(); // 🚀 Inicia conexión
+
+//funcion para oredenar
+function 
