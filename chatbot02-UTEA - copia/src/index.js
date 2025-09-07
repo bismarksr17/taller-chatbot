@@ -20,58 +20,50 @@ async function connectToWhatsApp() {
     sock.ev.on('creds.update', saveCreds);
 
     sock.ev.on('connection.update', async (update) => {
-        try {
-            const { connection, lastDisconnect, qr } = update;
+        const { connection, lastDisconnect, qr } = update;
 
-            if (qr) qrcode.generate(qr, { small: true });
+        if (qr) qrcode.generate(qr, { small: true });
 
-            if (connection === 'close') {
-                const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
-                console.log('🔌 Conexión cerrada. Reconectando:', shouldReconnect);
-                if (shouldReconnect) {
-                    await connectToWhatsApp(); // 🔁 actualiza sock global
-                }
-            } else if (connection === 'open') {
-                console.log('✅ Conexión abierta con WhatsApp');
+        if (connection === 'close') {
+            const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
+            console.log('🔌 Conexión cerrada. Reconectando:', shouldReconnect);
+            if (shouldReconnect) {
+                await connectToWhatsApp(); // 🔁 actualiza sock global
             }
-        } catch (err) {
-            console.error('❌ Error en connection.update:', err.message);
+        } else if (connection === 'open') {
+            console.log('✅ Conexión abierta con WhatsApp');
         }
     });
 
     // 🎧 Escuchar mensajes entrantes tipo "reporte"
     sock.ev.on('messages.upsert', async (event) => {
-        try {
-            for (const m of event.messages) {
-                const id = m.key.remoteJid;
+        for (const m of event.messages) {
+            const id = m.key.remoteJid;
 
-                if (event.type !== 'notify' || m.key.fromMe || id.includes('@g.us') || id.includes('@broadcast')) {
-                    return;
-                }
+            if (event.type !== 'notify' || m.key.fromMe || id.includes('@g.us') || id.includes('@broadcast')) {
+                return;
+            }
 
-                const mensajeTexto = m.message?.conversation || m.message?.extendedTextMessage?.text;
+            const mensajeTexto = m.message?.conversation || m.message?.extendedTextMessage?.text;
 
-                if (mensajeTexto && mensajeTexto.trim().toLowerCase() === 'reporte') {
-                    try {
-                        const reporte = await obtenerMensajeReporte();
-                        await sock.sendMessage(id, { text: reporte });
-                        console.log(`📤 Enviado reporte a ${id}`);
-                    } catch (e) {
-                        console.error("❌ Error al enviar reporte:", e);
-                    }
+            if (mensajeTexto && mensajeTexto.trim().toLowerCase() === 'reporte') {
+                try {
+                    const reporte = await obtenerMensajeReporte();
+                    await sock.sendMessage(id, { text: reporte });
+                    console.log(`📤 Enviado reporte a ${id}`);
+                } catch (e) {
+                    console.error("❌ Error al enviar reporte:", e);
                 }
             }
-        } catch (err) {
-            console.error('❌ Error en messages.upsert:', err.message);
         }
     });
 }
 
 // 🕒 CRON JOB: cada 5 minutos revisa mensajes pendientes
 cron.schedule('*/5 * * * *', async () => {
-    try {
-        console.log("🔍 Revisando mensajes pendientes en la base de datos...");
+    console.log("🔍 Revisando mensajes pendientes en la base de datos...");
 
+    try {
         if (!sock?.user) {
             console.log("⚠️ Socket desconectado. Saltando envío.");
             return;
@@ -95,6 +87,7 @@ cron.schedule('*/5 * * * *', async () => {
             } catch (err) {
                 console.error(`❌ Error al enviar mensaje a ${mensaje.numero_cel}:`, err.message);
             }
+             
         }
     } catch (err) {
         console.error("❌ Error general en el cron:", err.message);
@@ -102,7 +95,3 @@ cron.schedule('*/5 * * * *', async () => {
 });
 
 connectToWhatsApp(); // 🚀 Inicia conexión
-
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('❌ Promesa rechazada sin manejar:', reason);
-});
