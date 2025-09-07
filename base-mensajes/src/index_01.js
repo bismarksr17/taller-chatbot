@@ -34,6 +34,20 @@ async function conectarWhatsApp() {
     } else if(connection === 'open') {
       // Si la conexión se abre, muestra un mensaje en la terminal
       console.log('CONEXIÓN ABIERTA!!!');
+
+      
+      // Listar todos los grupos donde el número está agregado
+      try {
+        const gruposObj = await sock.groupFetchAllParticipating();
+        const grupos = Object.values(gruposObj);
+        console.log("Grupos donde estoy:");
+        console.log(grupos)
+        //grupos.forEach(grupo => {
+        //  console.log(`- ${grupo.subject} (${grupo.id})`);
+        //});
+      } catch (err) {
+        console.error("Error al obtener los grupos:", err);
+      }
     }
   });
 
