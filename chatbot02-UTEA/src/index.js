@@ -25,13 +25,6 @@ async function connectToWhatsApp() {
 
             if (qr) qrcode.generate(qr, { small: true });
 
-<<<<<<< HEAD
-        if (connection === 'close') {
-            const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
-            
-            if (shouldReconnect) {
-                await connectToWhatsApp(); // 🔁 actualiza sock global
-=======
             if (connection === 'close') {
                 const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
                 console.log('🔌 Conexión cerrada. Reconectando:', shouldReconnect);
@@ -40,7 +33,6 @@ async function connectToWhatsApp() {
                 }
             } else if (connection === 'open') {
                 console.log('✅ Conexión abierta con WhatsApp');
->>>>>>> 75bed65ff09e229c784c9555b51563c9638ecc80
             }
         } catch (err) {
             console.error('❌ Error en connection.update:', err.message);
@@ -111,11 +103,6 @@ cron.schedule('*/5 * * * *', async () => {
 
 connectToWhatsApp(); // 🚀 Inicia conexión
 
-<<<<<<< HEAD
-//funcion para oredenar
-function 
-=======
 process.on('unhandledRejection', (reason, promise) => {
     console.error('❌ Promesa rechazada sin manejar:', reason);
 });
->>>>>>> 75bed65ff09e229c784c9555b51563c9638ecc80

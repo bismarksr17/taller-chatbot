@@ -1,7 +1,7 @@
 // conexión con base de datos
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize('utea', 'postgres', 'A123456*', {
+const sequelize = new Sequelize('utea', 'postgres', '77663540', {
   host: 'localhost',
   port: 5433,
   dialect: 'postgres'
